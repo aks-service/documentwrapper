@@ -20,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "aks-service\\DocumentWrapper\\DocumentWrapperServiceProvider"
+                "aks-service\\DocumentWrapper\\src\\DocumentWrapperServiceProvider"
             ],
             "aliases": {
                 "Document": "AksService\\DocumentWrapper\\Facades\\Document"
