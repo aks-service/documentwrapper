@@ -25,6 +25,6 @@ class DocumentWrapperServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views/pdf', 'documentwrapper');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'documentwrapper');
     }
 }
