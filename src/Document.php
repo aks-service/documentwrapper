@@ -56,7 +56,7 @@ class Document
         return $this->getPDFObject()->inline($this->getFileName());
     }
 
-    public function getFile() : Response
+    public function download() : Response
     {
         return $this->getPDFObject()->download($this->getFileName());
     }
