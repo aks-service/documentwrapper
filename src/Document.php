@@ -20,8 +20,8 @@ class Document
     private string $footer;
 
     private array $data;
-    private array $headerData;
-    private array $footerData;
+    private array $headerData = [];
+    private array $footerData = [];
 
 
     private string $fileName;
