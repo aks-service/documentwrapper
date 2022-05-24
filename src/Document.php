@@ -52,10 +52,10 @@ class Document
 
     private function loadConfig() : void
     {
-       $this->DEFAULT_TEMPLATE = config('document.DEFAULT_TEMPLATE', 'document::pdf.template');
-       $this->DEFAULT_HEADER = config('document.DEFAULT_HEADER', 'document::pdf.header');
-       $this->DEFAULT_FOOTER = config('document.DEFAULT_FOOTER', 'document::pdf.footer');
-       $this->DEFAULT_FILENAME = config('document.DEFAULT_FILENAME', 'report.pdf');
+        $this->DEFAULT_TEMPLATE = config('document.DEFAULT_TEMPLATE', 'document::pdf.template');
+        $this->DEFAULT_HEADER = config('document.DEFAULT_HEADER', 'document::pdf.header');
+        $this->DEFAULT_FOOTER = config('document.DEFAULT_FOOTER', 'document::pdf.footer');
+        $this->DEFAULT_FILENAME = config('document.DEFAULT_FILENAME', 'report.pdf');
 
         $this->isHeaderSet = config('document.USE_DEFAULT_HEADER', true);
         $this->isFooterSet = config('document.USE_DEFAULT_FOOTER', true);
@@ -74,8 +74,9 @@ class Document
 
     private function getHeaderOptions() : array
     {
+        $data = $this->getHeaderData();
         return $this->isHeaderSet() ? [
-            'header-html' => \view($this->getHeader(), compact($this->getHeaderData()))
+            'header-html' => \view($this->getHeader(), compact('data'))
         ] : [];
     }
 
@@ -91,8 +92,9 @@ class Document
 
     private function getFooterOptions() : array
     {
+        $data = $this->getFooterData();
         return $this->isFooterSet() ? [
-            'footer-html' => \View($this->getFooter(), compact($this->getFooterData()))
+            'footer-html' => \View($this->getFooter(), compact('data'))
         ] : [];
     }
 
