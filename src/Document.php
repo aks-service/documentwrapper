@@ -10,9 +10,9 @@ use Illuminate\View\View;
 
 class Document
 {
-    private string $DEFAULT_TEMPLATE = 'pdf.template';
-    private string $DEFAULT_HEADER = 'pdf.header';
-    private string $DEFAULT_FOOTER = 'pdf.footer';
+    private string $DEFAULT_TEMPLATE = 'documentwrapper::pdf.template';
+    private string $DEFAULT_HEADER = 'documentwrapper::pdf.header';
+    private string $DEFAULT_FOOTER = 'documentwrapper::pdf.footer';
     private string $DEFAULT_FILENAME = 'report.pdf';
 
     private string $template;
