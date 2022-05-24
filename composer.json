@@ -1,0 +1,37 @@
+{
+    "name": "aks-service/documentwrapper",
+    "description": "A document wrapper to create pdf files with header and footer",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "barryvdh/laravel-snappy": "1.*",
+        "h4cc/wkhtmltopdf-amd64": "0.12.x",
+        "h4cc/wkhtmltoimage-amd64": "0.12.x",
+        "laravel/framework": "^8.75"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "10.0.x-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "AksService\\DocumentWrapper\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "aks-service\\DocumentWrapper\\DocumentWrapperServiceProvider"
+            ],
+            "aliases": {
+                "Document": "AksService\\DocumentWrapper\\Facades\\Document"
+            }
+        }
+    },
+    "authors": [
+        {
+            "name": "Justin Preuß",
+            "email": "justin.preuss@aks-service.de"
+        }
+    ],
+    "minimum-stability": "dev"
+}
