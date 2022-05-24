@@ -10,7 +10,7 @@ use Illuminate\View\View;
 
 class Document
 {
-    private string $DEFAULT_TEMPLATE = 'pdf.template2';
+    private string $DEFAULT_TEMPLATE = 'pdf.template';
     private string $DEFAULT_HEADER = 'pdf.header';
     private string $DEFAULT_FOOTER = 'pdf.footer';
     private string $DEFAULT_FILENAME = 'report.pdf';
