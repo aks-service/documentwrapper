@@ -16,6 +16,7 @@ class DocumentWrapperServiceProvider extends ServiceProvider
         $this->app->bind('document', function($app) {
             return new Document();
         });
+        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'document');
     }
 
     /**
@@ -25,6 +26,19 @@ class DocumentWrapperServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'documentwrapper');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'document');
+
+        if ($this->app->runningInConsole()) {
+
+            $this->publishes([
+                __DIR__.'/../config/config.php' => config_path('document.php'),
+            ], 'config');
+
+            // Publish views
+            $this->publishes([
+                __DIR__.'/../resources/views' => resource_path('views/vendor/documentwrapper'),
+            ], 'views');
+
+        }
     }
 }

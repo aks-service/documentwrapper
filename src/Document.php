@@ -10,28 +10,35 @@ use Illuminate\View\View;
 
 class Document
 {
-    private string $DEFAULT_TEMPLATE = 'documentwrapper::pdf.template';
-    private string $DEFAULT_HEADER = 'documentwrapper::pdf.header';
-    private string $DEFAULT_FOOTER = 'documentwrapper::pdf.footer';
-    private string $DEFAULT_FILENAME = 'report.pdf';
+    private string $DEFAULT_TEMPLATE;
+    private string $DEFAULT_HEADER;
+    private string $DEFAULT_FOOTER;
+    private string $DEFAULT_FILENAME;
 
     private string $template;
     private string $header;
     private string $footer;
+
     private array $data;
+    private array $headerData;
+    private array $footerData;
+
+
     private string $fileName;
     private array $options;
 
+    private bool $isHeaderSet = true;
+    private bool $isFooterSet = true;
 
 
 
-    public static function make(string $template = '', string $header = '', string $footer = '', array $data = [], string $fileName = '', array $options = []) : Document
+    public static function make(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = []) : Document
     {
-        return new static($template, $header, $footer, $data, $fileName, $options);
+        return new static(template: $template, header: $header, footer: $footer, data: $data, headerData: $headerData, footerData: $footerData, fileName: $fileName, options: $options);
     }
 
 
-    public function __construct(string $template = '', string $header = '', string $footer = '', array $data = [], string $fileName = '', array $options = [])
+    public function __construct(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [])
     {
         $this->template = $template;
         $this->header = $header;
@@ -39,27 +46,80 @@ class Document
         $this->data = $data;
         $this->fileName = $fileName;
         $this->options = $options;
+
+        $this->loadConfig();
+    }
+
+    private function loadConfig() : void
+    {
+       $this->DEFAULT_TEMPLATE = config('document.DEFAULT_TEMPLATE', 'document::pdf.template');
+       $this->DEFAULT_HEADER = config('document.DEFAULT_HEADER', 'document::pdf.header');
+       $this->DEFAULT_FOOTER = config('document.DEFAULT_FOOTER', 'document::pdf.footer');
+       $this->DEFAULT_FILENAME = config('document.DEFAULT_FILENAME', 'report.pdf');
+
+        $this->isHeaderSet = config('document.USE_DEFAULT_HEADER', true);
+        $this->isFooterSet = config('document.USE_DEFAULT_FOOTER', true);
     }
 
     private function getPDFObject() : \Barryvdh\Snappy\PdfWrapper
     {
         $data = $this->data;
         return PDF::loadView($this->getTemplate() != '' ? $this->getTemplate() : $this->getDefaultTemplate(), compact('data'))
-            ->setOptions(array_merge($this->getOptions(), [
-                'footer-html' => \View($this->getFooter()),
-                'header-html' => \view($this->getHeader()),
-            ]));
+            ->setOptions(array_merge($this->getOptions(), $this->getHeaderOptions(), $this->getFooterOptions()));
     }
+
+    /********************/
+    /* HEADER FUNCTIONS */
+    /********************/
+
+    private function getHeaderOptions() : array
+    {
+        return $this->isHeaderSet() ? [
+            'header-html' => \view($this->getHeader(), compact($this->getHeaderData()))
+        ] : [];
+    }
+
+    private function isHeaderSet() : bool
+    {
+        return $this->isHeaderSet;
+    }
+
+
+    /********************/
+    /* FOOTER FUNCTIONS */
+    /********************/
+
+    private function getFooterOptions() : array
+    {
+        return $this->isFooterSet() ? [
+            'footer-html' => \View($this->getFooter(), compact($this->getFooterData()))
+        ] : [];
+    }
+
+    private function isFooterSet() : bool
+    {
+        return $this->isFooterSet;
+    }
+
+
+    /********************/
+    /* OUTPUT FUNCTIONS */
+    /********************/
 
     public function getStream() : Response
     {
         return $this->getPDFObject()->inline($this->getFileName());
     }
 
-    public function download() : Response
+    public function getFile() : Response
     {
         return $this->getPDFObject()->download($this->getFileName());
     }
+
+
+    /********************/
+    /* SETTER FUNCTIONS */
+    /********************/
 
     public function setTemplate(string $template) : static
     {
@@ -91,11 +151,28 @@ class Document
         return $this;
     }
 
+    public function setHeaderData(array $data) : static
+    {
+        $this->headerData = $data;
+        return $this;
+    }
+
+    public function setFooterData(array $data) : static
+    {
+        $this->footerData = $data;
+        return $this;
+    }
+
     public function setOptions(array $options) : static
     {
         $this->options = $options;
         return $this;
     }
+
+
+    /********************/
+    /* GETTER FUNCTIONS */
+    /********************/
 
     private function getDefaultTemplate() : string
     {
@@ -119,7 +196,7 @@ class Document
 
     public function getTemplate() : string
     {
-        return $this->template != '' ? $this->getTemplate() : $this->getDefaultTemplate();
+        return $this->template != '' ? $this->template : $this->getDefaultTemplate();
     }
 
     public function getHeader(): string
@@ -143,8 +220,37 @@ class Document
         return $this->data;
     }
 
+    public function getHeaderData(): array
+    {
+        return $this->headerData;
+    }
+
+    public function getFooterData(): array
+    {
+        return $this->footerData;
+    }
+
     public function getOptions() : array
     {
         return $this->options;
     }
+
+
+    /********************/
+    /* REMOVE FUNCTIONS */
+    /********************/
+
+    public function removeHeader() : static
+    {
+        $this->isHeaderSet = false;
+        return $this;
+    }
+
+    public function removeFooter(): static
+    {
+        $this->isFooterSet = false;
+        return $this;
+    }
+
+
 }
