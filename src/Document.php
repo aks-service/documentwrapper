@@ -64,12 +64,12 @@ class Document
         $this->isFooterSet = config('document.USE_DEFAULT_FOOTER', true);
     }
 
-    private function getPDFObject() : \Barryvdh\Snappy\PdfWrapper
+    private function getPDFObject() : \Barryvdh\Snappy\PdfWrapper | bool
     {
         $data = $this->data;
 
         if(Storage::exists($this->getFilePath())){
-            return PDF::loadFile($this->getFilePath());
+            return true;
         }
 
         $file = PDF::loadView($this->getTemplate() != '' ? $this->getTemplate() : $this->getDefaultTemplate(), compact('data'))
@@ -118,14 +118,16 @@ class Document
     /* OUTPUT FUNCTIONS */
     /********************/
 
-    public function getStream() : Response
+    public function getStream() : \Symfony\Component\HttpFoundation\BinaryFileResponse| Response
     {
-        return $this->getPDFObject()->inline($this->getFileName());
+        $file = $this->getPDFObject();
+        return gettype($file) == "boolean" ? \response()->file(Storage::get($this->getFileName())) : $file->inline($this->getFileName());
     }
 
-    public function getFile() : Response
+    public function getFile()
     {
-        return $this->getPDFObject()->download($this->getFileName());
+        $file = $this->getPDFObject();
+        return gettype($file) == "boolean" ? Storage::download($this->getFilePath()) : $file->download($this->getFileName());
     }
 
 
