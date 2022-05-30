@@ -5,6 +5,7 @@ namespace AksService\DocumentWrapper;
 
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 
@@ -14,6 +15,7 @@ class Document
     private string $DEFAULT_HEADER;
     private string $DEFAULT_FOOTER;
     private string $DEFAULT_FILENAME;
+    private string $DEFAULT_PATH;
 
     private string $template;
     private string $header;
@@ -56,6 +58,7 @@ class Document
         $this->DEFAULT_HEADER = config('document.DEFAULT_HEADER', 'document::pdf.header');
         $this->DEFAULT_FOOTER = config('document.DEFAULT_FOOTER', 'document::pdf.footer');
         $this->DEFAULT_FILENAME = config('document.DEFAULT_FILENAME', 'report.pdf');
+        $this->DEFAULT_PATH = config('document.DEFAULT_PATH', 'document');
 
         $this->isHeaderSet = config('document.USE_DEFAULT_HEADER', true);
         $this->isFooterSet = config('document.USE_DEFAULT_FOOTER', true);
@@ -64,8 +67,15 @@ class Document
     private function getPDFObject() : \Barryvdh\Snappy\PdfWrapper
     {
         $data = $this->data;
-        return PDF::loadView($this->getTemplate() != '' ? $this->getTemplate() : $this->getDefaultTemplate(), compact('data'))
+
+        if(Storage::exists($this->getFilePath())){
+            return PDF::loadFile($this->getFilePath());
+        }
+
+        $file = PDF::loadView($this->getTemplate() != '' ? $this->getTemplate() : $this->getDefaultTemplate(), compact('data'))
             ->setOptions(array_merge($this->getOptions(), $this->getHeaderOptions(), $this->getFooterOptions()));
+        Storage::disk('local')->put($file);
+        return $file;
     }
 
     /********************/
@@ -194,6 +204,11 @@ class Document
     private function getDefaultFilename() : string
     {
         return $this->DEFAULT_FILENAME;
+    }
+
+    private function getFilePath() : string
+    {
+        return $this->DEFAULT_PATH + '/' + $this->getFileName();
     }
 
     public function getTemplate() : string

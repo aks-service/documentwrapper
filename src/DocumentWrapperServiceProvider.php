@@ -2,6 +2,7 @@
 
 namespace AksService\DocumentWrapper;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class DocumentWrapperServiceProvider extends ServiceProvider
@@ -39,6 +40,10 @@ class DocumentWrapperServiceProvider extends ServiceProvider
                 __DIR__.'/../resources/views' => resource_path('views/vendor/documentwrapper'),
             ], 'views');
 
+        }
+
+        if(!Storage::exists(config('document.DEFAULT_PATH'))){
+            Storage::makeDirectory(config('document.DEFAULT_PATH'), 0775, true);
         }
     }
 }
