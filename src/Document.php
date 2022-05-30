@@ -69,12 +69,12 @@ class Document
         $data = $this->data;
 
         if(Storage::exists($this->getFilePath())){
-            return PDF::loadFile($this->getFilePath(), 'Contents');
+            return PDF::loadFile($this->getFilePath());
         }
 
         $file = PDF::loadView($this->getTemplate() != '' ? $this->getTemplate() : $this->getDefaultTemplate(), compact('data'))
             ->setOptions(array_merge($this->getOptions(), $this->getHeaderOptions(), $this->getFooterOptions()));
-        Storage::disk('local')->put($file);
+        Storage::disk('local')->put($this->getFilePath(), $file->output());
         return $file;
     }
 
