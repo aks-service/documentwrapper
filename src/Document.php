@@ -69,7 +69,7 @@ class Document
         $data = $this->data;
 
         if(Storage::exists($this->getFilePath())){
-            return PDF::loadFile($this->getFilePath());
+            return PDF::loadFile($this->getFilePath(), 'Contents');
         }
 
         $file = PDF::loadView($this->getTemplate() != '' ? $this->getTemplate() : $this->getDefaultTemplate(), compact('data'))
@@ -208,7 +208,7 @@ class Document
 
     private function getFilePath() : string
     {
-        return $this->DEFAULT_PATH + '/' + $this->getFileName();
+        return $this->DEFAULT_PATH . '/' . $this->getFileName();
     }
 
     public function getTemplate() : string
