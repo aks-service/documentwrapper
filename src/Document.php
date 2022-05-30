@@ -118,16 +118,16 @@ class Document
     /* OUTPUT FUNCTIONS */
     /********************/
 
-    public function getStream() : \Symfony\Component\HttpFoundation\BinaryFileResponse| Response
+    public function getStream() : Response | \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $file = $this->getPDFObject();
-        return gettype($file) == "boolean" ? \response()->file(Storage::get($this->getFileName())) : $file->inline($this->getFileName());
+        return gettype($file) == "boolean" ? \response()->file(Storage::path($this->getFilePath())) : $file->inline($this->getFileName());
     }
 
-    public function getFile()
+    public function getFile() : Response | \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $file = $this->getPDFObject();
-        return gettype($file) == "boolean" ? Storage::download($this->getFilePath()) : $file->download($this->getFileName());
+        return gettype($file) == "boolean" ? Storage::download($this->getFilePath(), $this->getFileName()) : $file->download($this->getFileName());
     }
 
 
