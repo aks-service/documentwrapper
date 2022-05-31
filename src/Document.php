@@ -31,16 +31,16 @@ class Document
 
     private bool $isHeaderSet = true;
     private bool $isFooterSet = true;
+    private bool $force;
 
 
-
-    public static function make(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = []) : Document
+    public static function make(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [], bool $force = false) : Document
     {
-        return new static(template: $template, header: $header, footer: $footer, data: $data, headerData: $headerData, footerData: $footerData, fileName: $fileName, options: $options);
+        return new static(template: $template, header: $header, footer: $footer, data: $data, headerData: $headerData, footerData: $footerData, fileName: $fileName, options: $options, force: $force);
     }
 
 
-    public function __construct(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [])
+    public function __construct(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [], bool $force = false)
     {
         $this->template = $template;
         $this->header = $header;
@@ -48,6 +48,7 @@ class Document
         $this->data = $data;
         $this->fileName = $fileName;
         $this->options = $options;
+        $this->force = $force;
 
         $this->loadConfig();
     }
@@ -62,18 +63,25 @@ class Document
 
         $this->isHeaderSet = config('document.USE_DEFAULT_HEADER', true);
         $this->isFooterSet = config('document.USE_DEFAULT_FOOTER', true);
+
+        $this->force = config('document.FORCE_CREATE', false);
     }
 
     private function getPDFObject() : \Barryvdh\Snappy\PdfWrapper | bool
     {
         $data = $this->data;
 
-        if(Storage::exists($this->getFilePath())){
+        if(Storage::exists($this->getFilePath()) && !$this->force){
             return true;
         }
 
         $file = PDF::loadView($this->getTemplate() != '' ? $this->getTemplate() : $this->getDefaultTemplate(), compact('data'))
             ->setOptions(array_merge($this->getOptions(), $this->getHeaderOptions(), $this->getFooterOptions()));
+
+        if(Storage::exists($this->getFilePath()) && $this->force){
+            Storage::delete($this->getFilePath());
+        }
+
         Storage::disk('local')->put($this->getFilePath(), $file->output());
         return $file;
     }
@@ -184,6 +192,12 @@ class Document
     public function setOptions(array $options) : static
     {
         $this->options = $options;
+        return $this;
+    }
+
+    public function force() : static
+    {
+        $this->force = true;
         return $this;
     }
 

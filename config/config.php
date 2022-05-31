@@ -9,4 +9,6 @@ return [
 
     'USE_DEFAULT_HEADER' => true,
     'USE_DEFAULT_FOOTER' => true,
+
+    'FORCE_CREATE' => false,
 ];
