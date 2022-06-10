@@ -20,6 +20,7 @@ class Document
     private string $template;
     private string $header;
     private string $footer;
+    private string $filePath;
 
     private array $data;
     private array $headerData = [];
@@ -34,13 +35,13 @@ class Document
     private bool $force;
 
 
-    public static function make(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [], bool $force = false) : Document
+    public static function make(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [], bool $force = false, string $filePath = '') : Document
     {
-        return new static(template: $template, header: $header, footer: $footer, data: $data, headerData: $headerData, footerData: $footerData, fileName: $fileName, options: $options, force: $force);
+        return new static(template: $template, header: $header, footer: $footer, data: $data, headerData: $headerData, footerData: $footerData, fileName: $fileName, options: $options, force: $force, filePath: $filePath);
     }
 
 
-    public function __construct(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [], bool $force = false)
+    public function __construct(string $template = '', string $header = '', string $footer = '', array $data = [], array $headerData = [], array $footerData = [], string $fileName = '', array $options = [], bool $force = false, string $filePath = '')
     {
         $this->template = $template;
         $this->header = $header;
@@ -49,6 +50,7 @@ class Document
         $this->fileName = $fileName;
         $this->options = $options;
         $this->force = $force;
+        $this->filePath = $filePath;
 
         $this->loadConfig();
     }
@@ -171,6 +173,12 @@ class Document
         return $this;
     }
 
+    public function setFilePath(string $filePath) : static
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
+
     public function setData(array $data) : static
     {
         $this->data = $data;
@@ -228,7 +236,7 @@ class Document
 
     private function getFilePath() : string
     {
-        return $this->DEFAULT_PATH . '/' . $this->getFileName();
+        return empty($this->filePath) ? $this->DEFAULT_PATH . '/' . $this->getFileName() : $this->filePath;
     }
 
     public function getTemplate() : string
