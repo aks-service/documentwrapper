@@ -1,18 +1,10 @@
 <?php
 
-namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+it('example', function () {
+    expect(true)->toBeTrue();
+});
 
-class ExampleTest extends TestCase
-{
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function test_that_true_is_true()
-    {
-        $this->assertTrue(true);
-    }
-}
+it('is default template a string', function () {
+     expect(\AksService\DocumentWrapper\Document::make()->getTemplate())->toBeString();
+});
