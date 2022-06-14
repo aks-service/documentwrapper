@@ -11,7 +11,7 @@
 |
 */
 
- //uses(AksService\DocumentWrapper\Tests\TestCase::class)->in('Feature');
+ uses(AksService\DocumentWrapper\Tests\TestCase::class)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

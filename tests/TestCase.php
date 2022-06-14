@@ -12,7 +12,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
         // additional setup
     }
 
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             DocumentWrapperServiceProvider::class,
@@ -23,4 +23,15 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         // perform environment setup
     }
+
+    /**
+     * Ignore package discovery from.
+     *
+     * @return array
+     */
+    public function ignorePackageDiscoveriesFrom(): array
+    {
+        return ['laravel/passport'];
+    }
+
 }
